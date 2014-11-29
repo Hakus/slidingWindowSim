@@ -4,6 +4,7 @@ load 'packet.rb'
 port = 2000
 
 client = UDPSocket.new
+
 puts "Enter the network IP:"
 networkIP = gets.chomp
 client.connect(networkIP, port)
@@ -21,7 +22,7 @@ if(state.to_i == 1)
         puts "message entered"
         packet = makePacket(ip, 1, 1, 1, 1, msg)
         #pass the port here
-        sendPacket(client, networkIP, port, packet)
+        sendPacket(client, port, packet, networkIP)
     end
 else
     while(run == 1)

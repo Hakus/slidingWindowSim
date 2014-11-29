@@ -46,14 +46,13 @@ def getPacket(socket)
 		IO.select([socket])
 		retry
 	end
-
 	return packet
 end
 
-def sendPacket(socket, port, packet)
-	socket.send(packet, 0, packet.dest_ip.to_s, port)
-end
-
-def sendPacket(socket, networkIP, port, packet)
-    socket.send(packet, 0, networkIP, port)
+def sendPacket(socket, port, packet, *networkIP)
+	if(networkIP.size == 0)
+		socket.send(packet, 0, packet.dest_ip.to_s, port)
+	else
+		socket.send(packet, 0, networkIP[0], port)
+	end
 end
