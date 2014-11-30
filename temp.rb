@@ -1,9 +1,13 @@
 load 'packet.rb'
 
 #get a port isntead of defining it
-port = 2000
+port = 7005
 
 client = UDPSocket.new
+
+run = 1
+wSize = 5
+packetAmt = 11
 
 puts "Enter the network IP:"
 networkIP = gets.chomp
@@ -12,17 +16,17 @@ client.connect(networkIP, port)
 puts "enter program state"
 state = gets.chomp
 
-run = 1
+
 if(state.to_i == 1)
     puts "Input an IP"
     ip = gets.chomp
     while(run == 1)
         puts "enter a message"
         msg = gets.chomp
-        puts "message entered"
         packet = makePacket(ip, 1, 1, 1, 1, msg)
-        #pass the port here
         sendPacket(client, port, packet, networkIP)
+        ack = getPacket(client)
+        puts "Received ACK from #{ack[1]}"
     end
 else
     while(run == 1)

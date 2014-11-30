@@ -1,6 +1,9 @@
 require 'socket'
 require 'bit-struct'
 
+# global variables
+$window = Array.new
+
 # Packet Structure
 class Packet < BitStruct
 	octets		:dest_ip,	32
@@ -36,6 +39,14 @@ def makePacket(dest_ip, type, seqNum, winSize, ackNum, data)
 	return packet
 end
 
+def fillWindow(wSize, seqNum, packet)
+	for i in seqNum..seqNum+wSize-1
+		puts packet.inspect_detailed
+		$window.push(packet)
+		packet.seqNum += 1
+	end
+end
+
 def getPacket(socket)
 	packet = Packet.new
     #shouldn't this be + 6?
@@ -56,3 +67,5 @@ def sendPacket(socket, port, packet, *networkIP)
 		socket.send(packet, 0, networkIP[0], port)
 	end
 end
+
+
