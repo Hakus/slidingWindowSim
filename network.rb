@@ -3,9 +3,9 @@ load 'packet.rb'
 #get port instead of defining it
 port = 7005
 
-network_1 = UDPSocket.new
+network = UDPSocket.new
 #this binds to INADDR_ANY (any incomming IP address)
-network_1.bind('', port.to_i)
+network.bind('', port.to_i)
 
 # for i in 0..Socket.ip_address_list.size-1
 # 	puts Socket.ip_address_list[i].ip_address
