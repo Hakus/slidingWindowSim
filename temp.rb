@@ -38,7 +38,7 @@ else
     while(run == 1)
         packet = getPacket(client)
         puts "Received #{packet.data} from #{packet.src_ip}"
-        ack = makePacket(packet.src_ip, local_ip, 0, 1, 1, "ACK")
+        ack = makePacket(packet.src_ip, $local_ip, 0, 1, 1, "ACK")
         sendPacket(client, $port, ack, networkIP)
     end
 end
