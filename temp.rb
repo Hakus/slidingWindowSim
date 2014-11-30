@@ -21,12 +21,11 @@ if(state.to_i == 0)
     puts "Input an IP"
     ip = gets.chomp
     while(run == 1)
-        puts "enter #{wSize} words"
+        msg = ["Hello", "How", "Are", "You", "Bob"]
+        # , "Am", "Fine", "Thanks"]
         msg = gets.chomp.split(/\W+/)
         window = fillWindow(ip, 0, msg)
         sendWindow(networkIP, window, client)
-        # packet = makePacket(ip, local_ip, 1, 1, 1, msg)
-        # sendPacket(client, $port, packet, networkIP)
         receivedACKS = 0
         while(receivedACKS < wSize)
             ack = getPacket(client)

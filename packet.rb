@@ -1,5 +1,6 @@
 require 'socket'
 require 'bit-struct'
+require 'timeout'
 
 # global variables
 $window = Array.new
@@ -59,7 +60,7 @@ end
 def getPacket(socket)
 	packet = Packet.new
     #shouldn't this be + 6?
-	size = 2048 + 5
+	size = 2048 + 6
 	begin
 		packet = Packet.new(socket.recvfrom_nonblock(size)[0])
 	rescue Errno::EAGAIN
