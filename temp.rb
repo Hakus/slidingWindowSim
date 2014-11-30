@@ -29,13 +29,13 @@ if(state.to_i == 0)
         receivedACKS = 0
         while(receivedACKS < wSize)
             begin
-                Timeout.timeout(5) do
+                Timeout.timeout(2) do
                 ack = getPacket(client)
                 puts "Received ACK (type = #{ack.type}) response from #{ack.src_ip}"
                 receivedACKS += 1
                 end
             rescue Timeout::Error
-                puts "A packet may have been dropped"
+                puts "A packet may have been dropped. Trying again"
             end
         end
     end

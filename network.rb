@@ -8,17 +8,18 @@ network = UDPSocket.new
 network.bind('', port.to_i)
 
 dropRate = 50
-randNum = rand(100)
 run = 1
 
 while(run == 1)
-	puts sleep(1.0/randNum.to_f)
+	randNum = rand(100)
 	packet = getPacket(network)
 	if packet.type == 1
 		puts "Sending #{packet.data} to #{packet.dest_ip} from #{packet.src_ip}"
 	else
 		puts "Sending ACK to #{ack.dest_ip} from #{ack.src_ip}"
 	end
+
+	sleep(1.0/randNum.to_f)
 	
 	if(dropRate > randNum)
 		puts "Dropped packet #{packet.seqNum}"
