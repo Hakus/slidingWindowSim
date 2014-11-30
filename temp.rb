@@ -12,6 +12,7 @@ packetAmt = 11
 puts "Enter the network IP:"
 networkIP = gets.chomp
 client.connect(networkIP, port)
+client.bind('', port)
 
 puts "enter program state"
 state = gets.chomp
