@@ -19,7 +19,8 @@ while(run == 1)
 	packet = getPacket(network)
 	puts "Sending #{packet.data} to #{packet.dest_ip} from #{packet.src_ip}"
 	sendPacket(network, port, packet)
+	
 	ack = getPacket(network)
-	puts "Sending ACK type #{ack.type} to #{packet.dest_ip} from #{packet.src_ip}"
+	puts "Sending ACK to #{packet.dest_ip} from #{packet.src_ip}"
 	sendPacket(network, port, ack)
 end
