@@ -23,14 +23,20 @@ if(state.to_i == 0)
     while(run == 1)
         msg = ["Hello", "How", "Are", "You", "Bob"]
         # , "Am", "Fine", "Thanks"]
-        msg = gets.chomp.split(/\W+/)
+        # msg = gets.chomp.split(/\W+/)
         window = fillWindow(ip, 0, msg)
         sendWindow(networkIP, window, client)
         receivedACKS = 0
         while(receivedACKS < wSize)
-            ack = getPacket(client)
-            puts "Received ACK (type = #{ack.type}) response from #{ack.src_ip}"
-            receivedACKS += 1
+            begin
+                Timeout.timeout(5) do
+                ack = getPacket(client)
+                puts "Received ACK (type = #{ack.type}) response from #{ack.src_ip}"
+                receivedACKS += 1
+                end
+            rescue Timeout::Error
+                puts "A packet may have been dropped"
+            end
         end
     end
 else
