@@ -15,6 +15,5 @@ packetAmt = 11
 while(run == 1)
 	packet = getPacket(network_1)
 	puts "Sending #{packet.data} to #{packet.dest_ip}"
-	sendPacket(network_1, port, packet, packet.dest_ip)
-
+	sendPacket(network_1, port, packet)
 end
