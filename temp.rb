@@ -24,7 +24,7 @@ if(state.to_i == 0)
         puts "enter #{wSize} words"
         msg = gets.chomp.split(/\W+/)
         window = fillWindow(ip, 0, msg)
-        sendWindow(ip, window, client)
+        sendWindow(networkIP, window, client)
         # packet = makePacket(ip, local_ip, 1, 1, 1, msg)
         # sendPacket(client, $port, packet, networkIP)
         receivedACKS = 0
