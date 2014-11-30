@@ -39,12 +39,21 @@ def makePacket(dest_ip, src_ip, type, seqNum, ackNum, data)
 	return packet
 end
 
-def fillWindow(wSize, seqNum, packet)
+# Data is an array of data size = window size 
+def fillWindow(dest_ip, seqNum, data)
+	wSize = data.length
+	window = Array.new
 	for i in seqNum..seqNum+wSize-1
-		puts packet.inspect_detailed
-		$window.push(packet)
-		packet.seqNum += 1
+		packet = Packet.new
+		packet.dest_ip = dest_ip
+		packet.src_ip = $local_ip
+		packet.type = 1
+		packet.seqNum = seqNum + i
+		packet.data = data[i]
+		window.push(packet)
 	end
+
+	return window
 end
 
 def getPacket(socket)
@@ -62,10 +71,16 @@ end
 
 def sendPacket(socket, port, packet, *networkIP)
 	if(networkIP.size == 0)
-		socket.send(packet, 0, packet.dest_ip.to_s, port)
+		socket.send(packet, 0, packet.dest_ip, port)
 	else
 		socket.send(packet, 0, networkIP[0], port)
 	end
 end
 
+def sendWindow(networkIP, window, socket)
+	for i in 0..window.size-1
+		puts window[i].inspect
+		sendPacket(socket, $port, window[i])
+	end
+end
 
