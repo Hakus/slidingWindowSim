@@ -7,9 +7,9 @@ $window = Array.new
 # Packet Structure
 class Packet < BitStruct
 	octets		:dest_ip,	32
+	octets		:src_ip,	32
 	unsigned	:type,		2
 	unsigned	:seqNum,	16
-	unsigned	:winSize,	4
 	unsigned	:ackNum,	16
 	rest		:data
 end
@@ -26,13 +26,13 @@ end
 # returns a Packet struct
 # ==============================================================
 
-def makePacket(dest_ip, type, seqNum, winSize, ackNum, data)
+def makePacket(dest_ip, src_ip, type, seqNum, ackNum, data)
 	packet = Packet.new
 
 	packet.dest_ip = dest_ip
+	packet.src_ip = src_ip
 	packet.type = type
 	packet.seqNum = seqNum
-	packet.winSize = winSize
 	packet.ackNum = ackNum
 	packet.data = data
 
