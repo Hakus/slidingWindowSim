@@ -16,7 +16,7 @@ while(run == 1)
 	if packet.type == 1
 		puts "Sending #{packet.data} to #{packet.dest_ip} from #{packet.src_ip}"
 	else
-		puts "Sending ACK to #{ack.dest_ip} from #{ack.src_ip}"
+		puts "Sending ACK to #{packet.dest_ip} from #{packet.src_ip}"
 	end
 
 	sleep(1.0/randNum.to_f)
