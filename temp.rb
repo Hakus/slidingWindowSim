@@ -34,7 +34,7 @@ if(state.to_i == 0)
             sendWindow(networkIP, window, client)
             while(windowACKs < wSize)
                 begin
-                    Timeout.timeout(2) do
+                    Timeout.timeout(1) do
                     ack = getPacket(client)
                     puts "Received #{ack.seqNum}, expected #{totalACKs}"
                     if ack.seqNum == totalACKs

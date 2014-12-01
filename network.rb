@@ -18,8 +18,6 @@ while(run == 1)
 	else
 		puts "Sending ACK #{packet.seqNum} to #{packet.src_ip} from #{packet.dest_ip}"
 	end
-
-	sleep(0.2)
 	
 	if(dropRate > randNum)
 		if(packet.type == 1)
@@ -28,7 +26,7 @@ while(run == 1)
 			puts "Dropped ACK #{packet.seqNum}"
 		end
 	else
+		sleep(0.2)
 		sendPacket(network, port, packet)
 	end
-
 end
