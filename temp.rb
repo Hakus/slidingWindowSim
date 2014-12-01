@@ -21,22 +21,21 @@ if(option.to_i == 0)
     ip = gets.chomp
 
     while(run == 1)
-        msg = ["Hello", "How", "Are", "You", "Bob", "I", "Am", "Fine", "Thanks"]
+        msg = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]
         packetAmt = msg.size
         # msg = gets.chomp.split(/\W+/)
         totalACKs = 0
         while(totalACKs < packetAmt)
             windowACKs = 0
             window = fillWindow(ip, totalACKs, msg, wSize)
-            puts "Sending packets #{totalACKs} to #{totalACKs + wSize}"
+            puts "Sending packets #{totalACKs} to #{totalACKs + wSize - 1}"
             sendWindow(networkIP, window, client)
             while(windowACKs < wSize)
                 begin
                     Timeout.timeout(1) do
                     ack = getPacket(client)
-                    puts "Received #{ack.seqNum}, expected #{totalACKs}"
                     if ack.seqNum == totalACKs
-                        puts "Received ACK (type = #{ack.type}) response from #{ack.src_ip}"
+                        puts "Received ACK response from #{ack.src_ip}"
                         totalACKs += 1
                         windowACKs += 1
                     end
