@@ -6,6 +6,7 @@ $local_ip = UDPSocket.open {|s| s.connect("64.233.187.99", 1); s.addr.last}
 
 # Constants
 wSize = 5
+run = 1
 
 puts "Enter the network IP:"
 networkIP = gets.chomp
@@ -57,7 +58,7 @@ else
                 puts "Did not receive any packets in 10 seconds. Assuming disconnection or lost EOT"
             end
         end
-        
+
         if packet.type == 2
             puts "Received EOT from #{packet.src_ip}"
             ack = makePacket(packet.src_ip, $local_ip, 2, 1, 1, "Received EOT")
