@@ -101,6 +101,8 @@ def getACKs(socket, wSize, totalACKs)
 	            puts "Received ACK ##{ack.seqNum} from #{ack.src_ip}"
 	            totalACKs += 1
 	            windowACKs += 1
+	        else
+	        	next
 	        end
 	    end
 	    rescue Timeout::Error
