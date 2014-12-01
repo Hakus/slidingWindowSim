@@ -4,7 +4,7 @@ load 'packet.rb'
 $port = 7000
 $local_ip = UDPSocket.open {|s| s.connect("64.233.187.99", 1); s.addr.last}
 
-run = 1
+# Constants
 wSize = 5
 
 puts "Enter the network IP:"
@@ -23,28 +23,12 @@ if(option.to_i == 0)
     while(run == 1)
         msg = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]
         packetAmt = msg.size
-        # msg = gets.chomp.split(/\W+/)
         totalACKs = 0
         while(totalACKs < packetAmt)
-            windowACKs = 0
             window = fillWindow(ip, totalACKs, msg, wSize)
             puts "Sending packets #{totalACKs} to #{totalACKs + wSize - 1}"
             sendWindow(networkIP, window, client)
-            while(windowACKs < wSize)
-                begin
-                    Timeout.timeout(1) do
-                    ack = getPacket(client)
-                    if ack.seqNum == totalACKs
-                        puts "Received ACK response from #{ack.src_ip}"
-                        totalACKs += 1
-                        windowACKs += 1
-                    end
-                end
-                rescue Timeout::Error
-                    puts "ACK for packet #{totalACKs} may have been dropped. Resend window"
-                    break
-                end
-            end
+            totalACKs = getACKs(client, wSize, totalACKs)
 			if packetAmt - totalACKs < wSize
 				wSize = packetAmt - totalACKs
 			end
@@ -53,8 +37,6 @@ if(option.to_i == 0)
             sendPacket(client, $port, makePacket(ip, $local_ip, 2, 0, 0, ""), networkIP)
             puts "EOT packet sent"
             run = 0
-        else
-            puts "Something wrong in windowACKS == wSize"
         end
     end
 else
@@ -75,6 +57,7 @@ else
                 puts "Did not receive any packets in 10 seconds. Assuming disconnection or lost EOT"
             end
         end
+        
         if packet.type == 2
             puts "Received EOT from #{packet.src_ip}"
             ack = makePacket(packet.src_ip, $local_ip, 2, 1, 1, "Received EOT")
@@ -85,8 +68,7 @@ else
             ack = makePacket(packet.src_ip, $local_ip, 0, packet.seqNum, packet.seqNum + 1, "ACK")
             sendPacket(client, $port, ack, networkIP)
             if packet.seqNum == expected_seqnum
-                result << " "
-                result << packet.data
+                result << packet.data << " "
                 expected_seqnum += 1
             end
         end

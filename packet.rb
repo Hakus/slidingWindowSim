@@ -67,7 +67,6 @@ end
 
 def getPacket(socket)
 	packet = Packet.new
-    #shouldn't this be + 6?
 	size = 2048 + 6
 	begin
 		packet = Packet.new(socket.recvfrom_nonblock(size)[0])
@@ -90,5 +89,25 @@ def sendWindow(networkIP, window, socket)
 	for i in 0..window.size-1
 		sendPacket(socket, $port, window[i], networkIP)
 	end
+end
+
+def getACKs(socket, wSize, totalACKs)
+	windowACKs = 0
+	while(windowACKs < wSize)
+	    begin
+	        Timeout.timeout(1) do
+	        ack = getPacket(socket)
+	        if ack.seqNum == totalACKs
+	            puts "Received ACK ##{arc.seqNum} from #{ack.src_ip}"
+	            totalACKs += 1
+	            windowACKs += 1
+	        end
+	    end
+	    rescue Timeout::Error
+	        puts "ACK for packet #{totalACKs} may have been dropped. Resend window"
+	        break
+	    end
+	end
+	return totalACKs
 end
 
