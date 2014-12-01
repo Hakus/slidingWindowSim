@@ -43,6 +43,7 @@ while(run == 1)
             end
         end
     else
+        puts "Waiting for data packets..."
         result = ""
         expected_seqnum = 0
         init_packet = 0

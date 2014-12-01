@@ -98,7 +98,7 @@ def getACKs(socket, wSize, totalACKs)
 	        Timeout.timeout(1) do
 	        ack = getPacket(socket)
 	        if ack.seqNum == totalACKs
-	            puts "Received ACK ##{arc.seqNum} from #{ack.src_ip}"
+	            puts "Received ACK ##{ack.seqNum} from #{ack.src_ip}"
 	            totalACKs += 1
 	            windowACKs += 1
 	        end
