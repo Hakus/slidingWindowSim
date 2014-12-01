@@ -27,8 +27,8 @@ if(option.to_i == 0)
         totalACKs = 0
         while(totalACKs < packetAmt)
             windowACKs = 0
-            puts "wACKs: #{windowACKs}, totalACKs: #{totalACKs}"
             window = fillWindow(ip, totalACKs, msg, wSize)
+            puts "Sending packets #{totalACKs} to #{totalACKs + wSize}"
             sendWindow(networkIP, window, client)
             while(windowACKs < wSize)
                 begin

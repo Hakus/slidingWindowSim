@@ -10,7 +10,7 @@ network.bind('', port.to_i)
 run = 1
 
 puts "Please input the bit error rate (in percentage)"
-dropRate = gets.chomp
+dropRate = gets.chomp.to_i
 puts "Please input the network delay (in milliseconds)"
 delay = gets.chomp.to_f / 1000.0
 
