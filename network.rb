@@ -7,7 +7,7 @@ network = UDPSocket.new
 #this binds to INADDR_ANY (any incomming IP address)
 network.bind('', port.to_i)
 
-dropRate = 50
+dropRate = 20
 run = 1
 
 while(run == 1)
@@ -19,7 +19,7 @@ while(run == 1)
 		puts "Sending ACK #{packet.seqNum} to #{packet.src_ip} from #{packet.dest_ip}"
 	end
 
-	sleep(1.0/randNum.to_f)
+	sleep(0.3)
 	
 	if(dropRate > randNum)
 		puts "Dropped packet #{packet.seqNum}"

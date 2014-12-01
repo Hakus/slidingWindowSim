@@ -7,8 +7,9 @@ $local_ip = UDPSocket.open {|s| s.connect("64.233.187.99", 1); s.addr.last}
 run = 1
 wSize = 5
 
-puts "Enter the network IP:"
-networkIP = gets.chomp
+# puts "Enter the network IP:"
+# networkIP = gets.chomp
+networkIP = "192.168.0.8"
 client = UDPSocket.new
 client.bind('', $port)
 client.connect(networkIP, $port)
@@ -18,7 +19,9 @@ state = gets.chomp
 
 if(state.to_i == 0)
     puts "Input an IP"
-    ip = gets.chomp
+    #ip = gets.chomp
+    ip = "192.168.0.5"
+
     while(run == 1)
         msg = ["Hello", "How", "Are", "You", "Bob", "I", "Am", "Fine", "Thanks"]
         packetAmt = msg.size
@@ -43,7 +46,7 @@ if(state.to_i == 0)
                     break
                 end
             end
-			if packetAmt - totalACKs < 5
+			if packetAmt - totalACKs < wSize
 				wSize = packetAmt - totalACKs
 			end
         end
