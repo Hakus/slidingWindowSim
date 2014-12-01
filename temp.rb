@@ -23,24 +23,30 @@ if(state.to_i == 0)
         msg = ["Hello", "How", "Are", "You", "Bob", "I", "Am", "Fine", "Thanks"]
         packetAmt = msg.size
         # msg = gets.chomp.split(/\W+/)
-        receivedACKS = 0
-        windowACKS = 0
+        totalACKs = 0
         while(windowACKS < packetAmt)
-            window = fillWindow(ip, windowACKS, msg, wSize)
+            windowACKs = 0
+            window = fillWindow(ip, totalACKs, msg, wSize)
             sendWindow(networkIP, window, client)
-            while(receivedACKS < wSize)
+            while(windowACKS < wSize)
                 begin
                     Timeout.timeout(1) do
                     ack = getPacket(client)
                     puts "Received ACK (type = #{ack.type}) response from #{ack.src_ip}"
-                    receivedACKS += 1
-                    windowACKS += 1
+                    totalACKs += 1
+                    windowACKs += 1
                     end
                 rescue Timeout::Error
                     puts "A packet may have been dropped. Resend window"
                     break
                 end
             end
+        end
+        if(totalACKs == packetAmt)
+            sendPacket(client, $port, makePacket(ip, $local_ip, 2, 0, 0, ""), networkIP)
+            puts "EOT packet sent"
+        else
+            puts "Something wrong in windowACKS == wSize"
         end
     end
 else
