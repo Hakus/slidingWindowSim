@@ -1,7 +1,7 @@
 load 'packet.rb'
 
 #get port instead of defining it
-port = 7000
+port = 7005
 
 network = UDPSocket.new
 #this binds to INADDR_ANY (any incomming IP address)
