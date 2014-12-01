@@ -22,8 +22,13 @@ while(run == 1)
 	sleep(0.2)
 	
 	if(dropRate > randNum)
-		puts "Dropped packet #{packet.seqNum}"
+		if(packet.type == 1)
+			puts "Dropped packet #{packet.seqNum}"
+		else
+			puts "Dropped ACK #{packet.seqNum}"
+		end
 	else
 		sendPacket(network, port, packet)
 	end
+
 end

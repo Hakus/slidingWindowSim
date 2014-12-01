@@ -61,6 +61,7 @@ if(state.to_i == 0)
         end
     end
 else
+    result = ""
     while(run == 1)
         packet = getPacket(client)
         if packet.type == 2
@@ -72,8 +73,8 @@ else
             puts "Received packet #{packet.seqNum}: #{packet.data} from #{packet.src_ip}"
             ack = makePacket(packet.src_ip, $local_ip, 0, packet.seqNum, packet.seqNum + 1, "ACK")
             sendPacket(client, $port, ack, networkIP)
+            result << " "packet.data
         end
     end
+    puts result
 end
-
-puts "done"
