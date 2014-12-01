@@ -52,7 +52,7 @@ def fillWindow(dest_ip, seqNum, data, wSize)
 		packet.type = 1
 		packet.seqNum = seqNum + i
 		packet.ackNum = seqNum + i + 1
-		packet.data = data[i]
+		packet.data = data[seqNum + i]
 
 		window.push(packet)
 	end
