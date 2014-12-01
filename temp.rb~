@@ -41,6 +41,9 @@ if(state.to_i == 0)
                     break
                 end
             end
+			if packetAmt - totalACKs < 5
+				wSize = packetAmt - totalACKs
+			end
         end
         if(totalACKs == packetAmt)
             sendPacket(client, $port, makePacket(ip, $local_ip, 2, 0, 0, ""), networkIP)
