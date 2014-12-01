@@ -66,6 +66,7 @@ else
             puts "Received packet #{packet.seqNum}: #{packet.data} from #{packet.src_ip}"
             ack = makePacket(packet.src_ip, $local_ip, 0, packet.seqNum, packet.seqNum + 1, "ACK")
             sendPacket(client, $port, ack, networkIP)
+            expected_SeqNum += 1
         elsif packet.type == 2
             puts "Received EOT from #{packet.src_ip}"
             ack = makePacket(packet.src_ip, $local_ip, 2, 1, 1, "Received EOT")
