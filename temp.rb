@@ -37,6 +37,7 @@ if(state.to_i == 0)
                         totalACKs += 1
                         windowACKs += 1
                     end
+                end
                 rescue Timeout::Error
                     puts "ACK for packet #{totalACKs} may have been dropped. Resend window"
                     break
