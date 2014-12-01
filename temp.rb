@@ -65,10 +65,11 @@ else
     while(run == 1)
         if(init_packet == 0) 
             packet = getPacket(client)
+            init_packet = 1
         else
             begin
                 Timeout.timeout(10) do
-                    ack_getPacket(client)
+                    packet = getPacket(client)
                 end
             rescue Timeout::Error
                 run = 0

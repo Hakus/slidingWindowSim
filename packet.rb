@@ -88,7 +88,6 @@ end
 
 def sendWindow(networkIP, window, socket)
 	for i in 0..window.size-1
-		puts window[i].inspect
 		sendPacket(socket, $port, window[i], networkIP)
 	end
 end
