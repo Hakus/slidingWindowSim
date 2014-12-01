@@ -73,7 +73,8 @@ else
             puts "Received packet #{packet.seqNum}: #{packet.data} from #{packet.src_ip}"
             ack = makePacket(packet.src_ip, $local_ip, 0, packet.seqNum, packet.seqNum + 1, "ACK")
             sendPacket(client, $port, ack, networkIP)
-            result << " "packet.data
+            result << " "
+            result << packet.data
         end
     end
     puts result
