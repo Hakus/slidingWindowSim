@@ -32,7 +32,7 @@ if(state.to_i == 0)
                 begin
                     Timeout.timeout(1) do
                     ack = getPacket(client)
-                    if packet.seqNum == totalACKs
+                    if ack.seqNum == totalACKs
                         puts "Received ACK (type = #{ack.type}) response from #{ack.src_ip}"
                         totalACKs += 1
                         windowACKs += 1
