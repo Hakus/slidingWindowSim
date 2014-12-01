@@ -43,7 +43,8 @@ end
 # Data is an array of data size = window size 
 def fillWindow(dest_ip, seqNum, data, wSize)
 	window = Array.new
-	for i in seqNum..seqNum+wSize-1
+
+	for i in 0..wSize-1
 		packet = Packet.new
 
 		packet.dest_ip = dest_ip
