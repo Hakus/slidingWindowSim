@@ -61,7 +61,8 @@ else
     while(run == 1)
         expected_SeqNum = 0
         packet = getPacket(client)
-        if(packet.seqNum = expected_SeqNum)
+        puts packet.seqNum
+        if packet.seqNum == expected_SeqNum
             puts "Received packet #{packet.seqNum}: #{packet.data} from #{packet.src_ip}"
             ack = makePacket(packet.src_ip, $local_ip, 0, packet.seqNum, packet.seqNum + 1, "ACK")
             sendPacket(client, $port, ack, networkIP)
