@@ -58,10 +58,10 @@ if(state.to_i == 0)
         end
     end
 else
+    expected_SeqNum = 0
     while(run == 1)
-        expected_SeqNum = 0
         packet = getPacket(client)
-        puts packet.seqNum
+        puts "SeqNum #{packet.seqNum} received, expected #{expected_SeqNum}"
         if packet.seqNum == expected_SeqNum
             puts "Received packet #{packet.seqNum}: #{packet.data} from #{packet.src_ip}"
             ack = makePacket(packet.src_ip, $local_ip, 0, packet.seqNum, packet.seqNum + 1, "ACK")
@@ -71,6 +71,7 @@ else
             puts "Received EOT from #{packet.src_ip}"
             ack = makePacket(packet.src_ip, $local_ip, 2, 1, 1, "Received EOT")
             sendPacket(client, $port, ack, networkIP)
+            run = 0
         end
     end
 end
