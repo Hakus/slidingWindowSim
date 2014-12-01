@@ -63,8 +63,6 @@ option = gets.chomp
 
             if packet.type == 2
                 puts "Received EOT from #{packet.src_ip}"
-                ack = makePacket(packet.src_ip, $local_ip, 2, 1, 1, "Received EOT")
-                sendPacket(client, $port, ack, networkIP)
                 break
             else
                 puts "Received packet #{packet.seqNum}: #{packet.data} from #{packet.src_ip}"
