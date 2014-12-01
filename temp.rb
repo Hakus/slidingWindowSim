@@ -63,7 +63,6 @@ if(state.to_i == 0)
 else
     while(run == 1)
         packet = getPacket(client)
-        puts "SeqNum #{packet.seqNum} received, expected #{expected_SeqNum}"
         if packet.type == 2
             puts "Received EOT from #{packet.src_ip}"
             ack = makePacket(packet.src_ip, $local_ip, 2, 1, 1, "Received EOT")
