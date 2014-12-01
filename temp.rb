@@ -23,7 +23,7 @@ while(run == 1)
         puts "Where do you want to send?"
         ip = gets.chomp
 
-        while(!=0)
+        while(!1=0)
             msg = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]
             packetAmt = msg.size
             totalACKs = 0
