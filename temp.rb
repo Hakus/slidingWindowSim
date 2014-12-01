@@ -6,7 +6,6 @@ $local_ip = UDPSocket.open {|s| s.connect("64.233.187.99", 1); s.addr.last}
 
 run = 1
 wSize = 5
-packetAmt = 11
 
 puts "Enter the network IP:"
 networkIP = gets.chomp
@@ -21,21 +20,26 @@ if(state.to_i == 0)
     puts "Input an IP"
     ip = gets.chomp
     while(run == 1)
-        msg = ["Hello", "How", "Are", "You", "Bob"]
-        # , "Am", "Fine", "Thanks"]
+        msg = ["Hello", "How", "Are", "You", "Bob", "I", "Am", "Fine", "Thanks"]
+        packetAmt = msg.size
         # msg = gets.chomp.split(/\W+/)
-        window = fillWindow(ip, 0, msg)
-        sendWindow(networkIP, window, client)
         receivedACKS = 0
-        while(receivedACKS < wSize)
-            begin
-                Timeout.timeout(2) do
-                ack = getPacket(client)
-                puts "Received ACK (type = #{ack.type}) response from #{ack.src_ip}"
-                receivedACKS += 1
+        windowACKS = 0
+        while(windowACKS < packetAmt)
+            window = fillWindow(ip, windowACKS, msg, wSize)
+            sendWindow(networkIP, window, client)
+            while(receivedACKS < wSize)
+                begin
+                    Timeout.timeout(1) do
+                    ack = getPacket(client)
+                    puts "Received ACK (type = #{ack.type}) response from #{ack.src_ip}"
+                    receivedACKS += 1
+                    windowACKS += 1
+                    end
+                rescue Timeout::Error
+                    puts "A packet may have been dropped. Resend window"
+                    break
                 end
-            rescue Timeout::Error
-                puts "A packet may have been dropped. Trying again"
             end
         end
     end

@@ -41,8 +41,7 @@ def makePacket(dest_ip, src_ip, type, seqNum, ackNum, data)
 end
 
 # Data is an array of data size = window size 
-def fillWindow(dest_ip, seqNum, data)
-	wSize = data.length
+def fillWindow(dest_ip, seqNum, data, wSize)
 	window = Array.new
 	for i in seqNum..seqNum+wSize-1
 		packet = Packet.new
