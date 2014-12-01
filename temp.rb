@@ -14,11 +14,10 @@ client = UDPSocket.new
 client.bind('', $port)
 client.connect(networkIP, $port)
 
+while(run == 1)
 puts "Are you sending or receiving? (Input 0 for send, 1 for receive)"
 option = gets.chomp
 
-
-while(run == 1)
     if(option.to_i == 0)
         puts "Where do you want to send?"
         ip = gets.chomp
@@ -77,6 +76,6 @@ while(run == 1)
                 end
             end
         end
-        puts result
+        puts "The received data is: #{result}"
     end
 end

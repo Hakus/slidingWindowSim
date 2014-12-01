@@ -20,8 +20,10 @@ while(run == 1)
 	packet = getPacket(network)
 	if packet.type == 1
 		puts "[SEND] Sending packet #{packet.seqNum} data: #{packet.data} to #{packet.src_ip}"
-	else
+	elsif packet.type == 0
 		puts "[RECV] Sending ACK #{packet.seqNum} to #{packet.src_ip}"
+	else
+		puts "[EOT] Sending EOT to #{packet.src_ip}"
 	end
 	
 	if(dropRate > randNum)
