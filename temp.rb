@@ -7,20 +7,18 @@ $local_ip = UDPSocket.open {|s| s.connect("64.233.187.99", 1); s.addr.last}
 run = 1
 wSize = 5
 
-# puts "Enter the network IP:"
-# networkIP = gets.chomp
-networkIP = "192.168.0.8"
+puts "Enter the network IP:"
+networkIP = gets.chomp
 client = UDPSocket.new
 client.bind('', $port)
 client.connect(networkIP, $port)
 
-puts "Enter program state. Can be 0 or 1 (send or receive)"
-state = gets.chomp
+puts "Are you sending or receiving? (Input 0 for send, 1 for receive)"
+option = gets.chomp
 
-if(state.to_i == 0)
-    puts "Input an IP"
-    #ip = gets.chomp
-    ip = "192.168.0.5"
+if(option.to_i == 0)
+    puts "Where do you want to send?"
+    ip = gets.chomp
 
     while(run == 1)
         msg = ["Hello", "How", "Are", "You", "Bob", "I", "Am", "Fine", "Thanks"]
@@ -62,8 +60,21 @@ if(state.to_i == 0)
     end
 else
     result = ""
+    expected_seqnum = 0
+    init_packet = 0
     while(run == 1)
-        packet = getPacket(client)
+        if(init_packet == 0) 
+            packet = getPacket(client)
+        else
+            begin
+                Timeout.timeout(10) do
+                    ack_getPacket(client)
+                end
+            rescue Timeout::Error
+                run = 0
+                puts "Did not receive any packets in 10 seconds. Assuming disconnection or lost EOT"
+            end
+        end
         if packet.type == 2
             puts "Received EOT from #{packet.src_ip}"
             ack = makePacket(packet.src_ip, $local_ip, 2, 1, 1, "Received EOT")
@@ -73,8 +84,11 @@ else
             puts "Received packet #{packet.seqNum}: #{packet.data} from #{packet.src_ip}"
             ack = makePacket(packet.src_ip, $local_ip, 0, packet.seqNum, packet.seqNum + 1, "ACK")
             sendPacket(client, $port, ack, networkIP)
-            result << " "
-            result << packet.data
+            if packet.seqNum == expected_seqnum
+                result << " "
+                result << packet.data
+                expected_seqnum += 1
+            end
         end
     end
     puts result

@@ -15,6 +15,31 @@ class Packet < BitStruct
 	rest		:data
 end
 
+# Data is an array of data size = window size 
+def fillWindow(dest_ip, seqNum, data, wSize)
+	window = Array.new
+
+	for i in 0..wSize-1
+		packet = Packet.new
+
+		packet.dest_ip = dest_ip
+		packet.src_ip = $local_ip
+		packet.type = 1
+		packet.seqNum = seqNum + i
+		packet.ackNum = seqNum + i + 1
+		packet.data = data[seqNum + i]
+
+		window.push(packet)
+	end
+
+	return window
+end
+
+# returns an array of wSize
+def splitFile(file, wSize, location)
+	#
+end
+
 # ==============================================================
 # makePacket - Creates a Packet structure and fill it with data
 # Takes in the following values:
@@ -38,26 +63,6 @@ def makePacket(dest_ip, src_ip, type, seqNum, ackNum, data)
 	packet.data = data
 
 	return packet
-end
-
-# Data is an array of data size = window size 
-def fillWindow(dest_ip, seqNum, data, wSize)
-	window = Array.new
-
-	for i in 0..wSize-1
-		packet = Packet.new
-
-		packet.dest_ip = dest_ip
-		packet.src_ip = $local_ip
-		packet.type = 1
-		packet.seqNum = seqNum + i
-		packet.ackNum = seqNum + i + 1
-		packet.data = data[seqNum + i]
-
-		window.push(packet)
-	end
-
-	return window
 end
 
 def getPacket(socket)
