@@ -55,6 +55,7 @@ if(state.to_i == 0)
         if(totalACKs == packetAmt)
             sendPacket(client, $port, makePacket(ip, $local_ip, 2, 0, 0, ""), networkIP)
             puts "EOT packet sent"
+            run = 0
         else
             puts "Something wrong in windowACKS == wSize"
         end
