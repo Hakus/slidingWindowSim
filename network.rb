@@ -14,9 +14,9 @@ while(run == 1)
 	randNum = rand(100)
 	packet = getPacket(network)
 	if packet.type == 1
-		puts "Sending #{packet.data} to #{packet.dest_ip} from #{packet.src_ip}"
+		puts "Sending packet #{packet.seqNum} data: #{packet.data} to #{packet.src_ip} from #{packet.dest_ip}"
 	else
-		puts "Sending ACK to #{packet.dest_ip} from #{packet.src_ip}"
+		puts "Sending ACK #{packet.seqNum} to #{packet.src_ip} from #{packet.dest_ip}"
 	end
 
 	sleep(1.0/randNum.to_f)

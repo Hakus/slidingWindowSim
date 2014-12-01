@@ -32,9 +32,10 @@ if(state.to_i == 0)
                 begin
                     Timeout.timeout(1) do
                     ack = getPacket(client)
-                    puts "Received ACK (type = #{ack.type}) response from #{ack.src_ip}"
-                    totalACKs += 1
-                    windowACKs += 1
+                    if packet.seqNum == totalACKs
+                        puts "Received ACK (type = #{ack.type}) response from #{ack.src_ip}"
+                        totalACKs += 1
+                        windowACKs += 1
                     end
                 rescue Timeout::Error
                     puts "ACK for packet #{totalACKs} may have been dropped. Resend window"
@@ -54,10 +55,13 @@ if(state.to_i == 0)
     end
 else
     while(run == 1)
+        expected_SeqNum = 0
         packet = getPacket(client)
-        puts "Received #{packet.data} from #{packet.src_ip}"
-        ack = makePacket(packet.src_ip, $local_ip, 0, 1, 1, "ACK")
-        sendPacket(client, $port, ack, networkIP)
+        if(packet.seqNum = expected_SeqNum)
+            puts "Received #{packet.data} from #{packet.src_ip}"
+            ack = makePacket(packet.src_ip, $local_ip, 0, 1, 1, "ACK")
+            sendPacket(client, $port, ack, networkIP)
+        end
     end
 end
 

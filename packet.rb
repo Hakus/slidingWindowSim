@@ -45,11 +45,14 @@ def fillWindow(dest_ip, seqNum, data, wSize)
 	window = Array.new
 	for i in seqNum..seqNum+wSize-1
 		packet = Packet.new
+
 		packet.dest_ip = dest_ip
 		packet.src_ip = $local_ip
 		packet.type = 1
 		packet.seqNum = seqNum + i
+		packet.ackNum = seqNum + i + 1
 		packet.data = data[i]
+
 		window.push(packet)
 	end
 
