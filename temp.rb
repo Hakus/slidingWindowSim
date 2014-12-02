@@ -59,17 +59,15 @@ end
 # Function:     sendData
 # 
 # Interface:    sendData(socket, wSize, networkIP)
-#               socket: UDP network socket used to send data
-#               wSize: Window Size for sliding window
+#               socket: UDP network socket used to receive data
 #               networkIP: IP of the network between the two clients
 # 
-# Notes:        Currently, the amount of packets is specified by the user
-#               Each data packet's data portion contains an incremental number
+# Notes:        The receiver will stop the connection if no packets arrive
+#               within 10 seconds. The exception is when it waits for the first
+#               packet, where it waits indefinitely.
 #
-#               The loop condition is while we haven't received an ACK for
-#               each packet. The end condition is when all the ACKs for each 
-#               packet is received, then the client sends an EOT and breaks 
-#               the loop
+#               The receiver sends an ACK for each packet received. But it will
+#               only append the data if the packet is expected packet
 # =============================================================================
 def recvData(socket, networkIP)
     puts "Waiting for data packets..."
