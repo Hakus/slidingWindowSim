@@ -26,14 +26,14 @@ while(1!=0)
 	# Once we get a packet, determime the type
 	# 0 = ACK, 1 = DATA, 2 = EOT
 	if packet.type == 1
-		puts "[SEND] Sending data packet #{packet.seqNum}: #{packet.data} to #{packet.src_ip}"
-		$log.info("[SEND] Sending data packet #{packet.seqNum}: #{packet.data} to #{packet.src_ip}")
+		puts "[SEND] Sending data packet #{packet.seqNum}: #{packet.data} to #{packet.dest_ip}"
+		$log.info("[SEND] Sending data packet #{packet.seqNum}: #{packet.data} to #{packet.dest_ip}")
 	elsif packet.type == 0
-		puts "[RECV] Sending ACK packet #{packet.seqNum} to #{packet.src_ip}"
-		$log.info("[RECV] Sending ACK packet #{packet.seqNum} to #{packet.src_ip}")
+		puts "[RECV] Sending ACK packet #{packet.seqNum} to #{packet.dest_ip}"
+		$log.info("[RECV] Sending ACK packet #{packet.seqNum} to #{packet.dest_ip}")
 	else
-		puts "[EOT] Sending EOT to #{packet.src_ip}"
-		$log.info("[EOT] Sending EOT to #{packet.src_ip}")
+		puts "[EOT] Sending EOT to #{packet.dest_ip}"
+		$log.info("[EOT] Sending EOT to #{packet.dest_ip}")
 	end
 
 	
