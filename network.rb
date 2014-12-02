@@ -1,8 +1,19 @@
 load 'packet.rb'
 
+# =============================================================================
+# File: 		network.rb 		- Network simulator
+# 				
+# Notes:        Simulates a network environment where variables such as
+# 				"network delay" and "noise" are introduced between two hosts
+# 
+# 				The network by default simply forwards any packets it gets to
+# 				the destination IP of the packet. In order to reflect a more
+# 				realistic network, small delays (using sleep()) and random
+# 				packet drops (rate specified by user) may occur.
+# =============================================================================
+
 # Setting up the logger
 $log = setupLog('network.log')
-
 # Constants
 port = 7000
 
