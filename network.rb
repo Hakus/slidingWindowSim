@@ -1,5 +1,8 @@
 load 'packet.rb'
 
+# Setting up the logger
+$log = setupLog('network.log')
+
 # Constants
 port = 7000
 
@@ -40,9 +43,9 @@ while(1!=0)
 		log.info("[EOT] Sending EOT to #{packet.src_ip}")
 	end
 
-	# Generate a random number
-	randNum = rand(100)
-	if(dropRate > randNum)
+	
+	randNum = rand(100) # Generate a random number
+	if(dropRate > randNum) # Determine whether or not to drop a packet
 		if packet.type == 1
 			puts "[NTWK] Dropped packet #{packet.seqNum}"
 			log.info("[NTWK] Dropped packet #{packet.seqNum}")
@@ -54,7 +57,7 @@ while(1!=0)
 			log.info("[NTWK] Dropped EOT packet")
 		end
 	else
-		sleep(delay)
+		sleep(delay) # network delay before sending a packet
 		sendPacket(network, port, packet)
 	end
 end

@@ -1,24 +1,132 @@
 load 'packet.rb'
 
-#get a port isntead of defining it
+# Setup global variables
 $port = 7000
 $local_ip = UDPSocket.open {|s| s.connect("64.233.187.99", 1); s.addr.last}
+$log = setupLog('client.log')
 
-# Constants
-wSize = 5
+# =============================================================================
+# Function:     sendData
+# 
+# Interface:    sendData(socket, wSize, networkIP)
+#               socket: UDP network socket used to send data
+#               wSize: Window Size for sliding window
+#               networkIP: IP of the network between the two clients
+# 
+# Notes:        Currently, the amount of packets is specified by the user
+#               Each data packet's data portion contains an incremental number
+#
+#               The loop condition is while we haven't received an ACK for
+#               each packet. The end condition is when all the ACKs for each 
+#               packet is received, then the client sends an EOT and breaks 
+#               the loop
+# =============================================================================
+def sendData(socket, wSize, networkIP)
+    puts "Where do you want to send to?"
+    ip = gets.chomp
+    puts "How many packets will you send?"
+    packetAmt = gets.chomp.to_i
+    # Loop forever
+    while(1!=0)
+        msg = [*0.to_s..(packetAmt-1).to_s]
+        totalACKs = 0 # total amount of ACKs received
+        # While we haven't received an ACK for each packet
+        while(totalACKs < packetAmt)
+            # Create a window of wSize
+            window = fillWindow(ip, totalACKs, msg, wSize)
+            puts "Sending packets #{totalACKs} to #{totalACKs + wSize - 1}"
+            $log.info("[SEND] Sending packets #{totalACKs} to #{totalACKs + wSize - 1}")
+            # Send the window
+            sendWindow(networkIP, window, socket)
+            # Wait to get ACKs for each packet in window
+            totalACKs = getACKs(socket, wSize, totalACKs, $log)
+            # If the amount of packets left is less than wSize, adjust accordingly
+            if packetAmt - totalACKs < wSize
+                wSize = packetAmt - totalACKs
+            end
+        end
+        # if we got ACKs for every packet, send EOT
+        if(totalACKs == packetAmt)
+            sendPacket(client, $port, makePacket(ip, $local_ip, 2, 0, 0, ""), networkIP)
+            puts "EOT packet sent"
+            $log.info("[SEND] EOT packet sent")
+            break
+        end
+    end
+end
+
+# =============================================================================
+# Function:     sendData
+# 
+# Interface:    sendData(socket, wSize, networkIP)
+#               socket: UDP network socket used to send data
+#               wSize: Window Size for sliding window
+#               networkIP: IP of the network between the two clients
+# 
+# Notes:        Currently, the amount of packets is specified by the user
+#               Each data packet's data portion contains an incremental number
+#
+#               The loop condition is while we haven't received an ACK for
+#               each packet. The end condition is when all the ACKs for each 
+#               packet is received, then the client sends an EOT and breaks 
+#               the loop
+# =============================================================================
+def recvData(socket, networkIP)
+    puts "Waiting for data packets..."
+    result = ""
+    expected_seqNum = 0
+    init_packet = 0
+    # Loop forever
+    while(1!=0)
+        # If we haven't received any packets yet
+        if(init_packet == 0) 
+            packet = getPacket(socket)
+            init_packet = 1
+        else
+            # If we've already received a packet, set a timeout for more packets
+            begin
+                Timeout.timeout(10) do
+                    packet = getPacket(socket)
+                end
+            rescue Timeout::Error
+                puts "Did not receive any packets in 10 seconds. Assuming disconnection or lost EOT"
+                $log.info("[RECV] Did not receive any packets in 10 seconds. Assuming disconnection or lost EOT")
+                break
+            end
+        end
+        # Handle the packet based on type
+        if packet.type == 2 # if it's EOT packet
+            puts "Received EOT from #{packet.src_ip}"
+            $log.info("[RECV] Received EOT from #{packet.src_ip}")
+            break # stop sending
+        else # if it's not EOT
+            puts "Received packet #{packet.seqNum}: #{packet.data} from #{packet.src_ip}"
+            $log.info("[RECV] Received packet #{packet.seqNum}: #{packet.data} from #{packet.src_ip}")
+            # make an ACK packet
+            ack = makePacket(packet.src_ip, $local_ip, 0, packet.seqNum, packet.seqNum + 1, "ACK")
+            # send it
+            sendPacket(socket, $port, ack, networkIP)
+            # if we get the packet we wanted, update the data received
+            if packet.seqNum == expected_seqNum
+                result << packet.data << " "
+                expected_seqNum += 1
+            end
+        end
+    end
+    # return the data we got
+    return result
+end
+
+
+# Main function
 
 puts "Enter the network IP:"
 networkIP = gets.chomp
+# Create socket and bind to any incoming IP
+# Connect the same socket to the network
 client = UDPSocket.new
 client.bind('', $port)
 client.connect(networkIP, $port)
-
-# Setting up logging feature
-logFile = File.open('client.log', 'w')
-log = Logger.new(logFile)
-log.formatter = proc do |severity, datetime, progname, msg|
-   Time.now.asctime + ":: #{msg}\n"
-end
 
 # Loop forever
 while(1!=0)
@@ -27,67 +135,15 @@ while(1!=0)
 
     # If we're sending...
     if(option.to_i == 0)
-        puts "Where do you want to send to?"
-        ip = gets.chomp
-
-        while(1!=0)
-            msg = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]
-            packetAmt = msg.size
-            totalACKs = 0
-            while(totalACKs < packetAmt)
-                window = fillWindow(ip, totalACKs, msg, wSize)
-                puts "Sending packets #{totalACKs} to #{totalACKs + wSize - 1}"
-                log.info("[SEND] Sending packets #{totalACKs} to #{totalACKs + wSize - 1}")
-                sendWindow(networkIP, window, client)
-                totalACKs = getACKs(client, wSize, totalACKs)
-    			if packetAmt - totalACKs < wSize
-    				wSize = packetAmt - totalACKs
-    			end
-            end
-            if(totalACKs == packetAmt)
-                sendPacket(client, $port, makePacket(ip, $local_ip, 2, 0, 0, ""), networkIP)
-                puts "EOT packet sent"
-                log.info("[SEND] EOT packet sent")
-                break
-            end
-        end
+        # Get the window size
+        puts "Input the window size"
+        wSize = gets.chomp.to_i
+        # Make and send data
+        sendData(client, wSize, networkIP)
     #If we're receiving...
     else
-        puts "Waiting for data packets..."
-        result = ""
-        expected_seqnum = 0
-        init_packet = 0
-        while(1!=0)
-            if(init_packet == 0) 
-                packet = getPacket(client)
-                init_packet = 1
-            else
-                begin
-                    Timeout.timeout(10) do
-                        packet = getPacket(client)
-                    end
-                rescue Timeout::Error
-                    puts "Did not receive any packets in 10 seconds. Assuming disconnection or lost EOT"
-                    log.info("[RECV] Did not receive any packets in 10 seconds. Assuming disconnection or lost EOT")
-                    break
-                end
-            end
-
-            if packet.type == 2
-                puts "Received EOT from #{packet.src_ip}"
-                log.info("[RECV] Received EOT from #{packet.src_ip}")
-                break
-            else
-                puts "Received packet #{packet.seqNum}: #{packet.data} from #{packet.src_ip}"
-                log.info("[RECV] Received packet #{packet.seqNum}: #{packet.data} from #{packet.src_ip}")
-                ack = makePacket(packet.src_ip, $local_ip, 0, packet.seqNum, packet.seqNum + 1, "ACK")
-                sendPacket(client, $port, ack, networkIP)
-                if packet.seqNum == expected_seqnum
-                    result << packet.data << " "
-                    expected_seqnum += 1
-                end
-            end
-        end
-        puts "The received data is: #{result}"
+        # Get ready to receive data
+        result = recvData(client, networkIP)
+        puts result
     end
 end

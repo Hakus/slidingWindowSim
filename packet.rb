@@ -36,9 +36,20 @@ def fillWindow(dest_ip, seqNum, data, wSize)
 	return window
 end
 
-# returns an array of wSize
-def splitFile(file, wSize, location)
-	#
+def sendWindow(networkIP, window, socket)
+	for i in 0..window.size-1
+		sendPacket(socket, $port, window[i], networkIP)
+	end
+end
+
+def setupLog(fileName)
+	# Setting up logging feature
+	logFile = File.open(fileName, 'w')
+	log = Logger.new(logFile)
+	log.formatter = proc do |severity, datetime, progname, msg|
+	   Time.now.asctime + ":: #{msg}\n"
+	end
+	return log
 end
 
 # ==============================================================
@@ -86,13 +97,7 @@ def sendPacket(socket, port, packet, *networkIP)
 	end
 end
 
-def sendWindow(networkIP, window, socket)
-	for i in 0..window.size-1
-		sendPacket(socket, $port, window[i], networkIP)
-	end
-end
-
-def getACKs(socket, wSize, totalACKs)
+def getACKs(socket, wSize, totalACKs, log)
 	windowACKs = 0
 	while(windowACKs < wSize)
 	    begin
@@ -100,6 +105,7 @@ def getACKs(socket, wSize, totalACKs)
 	        ack = getPacket(socket)
 	        if ack.seqNum == totalACKs
 	            puts "Received ACK ##{ack.seqNum} from #{ack.src_ip}"
+	            log.info("Received ACK ##{ack.seqNum} from #{ack.src_ip}")
 	            totalACKs += 1
 	            windowACKs += 1
 	        else
@@ -108,6 +114,7 @@ def getACKs(socket, wSize, totalACKs)
 	    end
 	    rescue Timeout::Error
 	        puts "ACK for packet #{totalACKs} may have been dropped. Resend window"
+	        log.info("ACK for packet #{totalACKs} may have been dropped. Resend window")
 	        break
 	    end
 	end
