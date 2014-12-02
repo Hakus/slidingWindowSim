@@ -47,7 +47,7 @@ def sendData(socket, wSize, networkIP)
         end
         # if we got ACKs for every packet, send EOT
         if(totalACKs == packetAmt)
-            sendPacket(client, $port, makePacket(ip, $local_ip, 2, 0, 0, ""), networkIP)
+            sendPacket(socket, $port, makePacket(ip, $local_ip, 2, 0, 0, ""), networkIP)
             puts "EOT packet sent"
             $log.info("[SEND] EOT packet sent")
             break
