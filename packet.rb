@@ -1,6 +1,7 @@
 require 'socket'
 require 'bit-struct'
 require 'timeout'
+require 'logger'
 
 # global variables
 $window = Array.new

@@ -6,7 +6,6 @@ $local_ip = UDPSocket.open {|s| s.connect("64.233.187.99", 1); s.addr.last}
 
 # Constants
 wSize = 5
-run = 1
 
 puts "Enter the network IP:"
 networkIP = gets.chomp
@@ -14,12 +13,21 @@ client = UDPSocket.new
 client.bind('', $port)
 client.connect(networkIP, $port)
 
-while(run == 1)
-puts "Are you sending or receiving? (Input 0 for send, 1 for receive)"
-option = gets.chomp
+# Setting up logging feature
+logFile = File.open('client.log', 'w')
+log = Logger.new(logFile)
+log.formatter = proc do |severity, datetime, progname, msg|
+   Time.now.asctime + ":: #{msg}\n"
+end
 
+# Loop forever
+while(1!=0)
+    puts "Are you sending or receiving? (Input 0 for send, 1 for receive)"
+    option = gets.chomp
+
+    # If we're sending...
     if(option.to_i == 0)
-        puts "Where do you want to send?"
+        puts "Where do you want to send to?"
         ip = gets.chomp
 
         while(1!=0)
@@ -29,6 +37,7 @@ option = gets.chomp
             while(totalACKs < packetAmt)
                 window = fillWindow(ip, totalACKs, msg, wSize)
                 puts "Sending packets #{totalACKs} to #{totalACKs + wSize - 1}"
+                log.info("[SEND] Sending packets #{totalACKs} to #{totalACKs + wSize - 1}")
                 sendWindow(networkIP, window, client)
                 totalACKs = getACKs(client, wSize, totalACKs)
     			if packetAmt - totalACKs < wSize
@@ -38,9 +47,11 @@ option = gets.chomp
             if(totalACKs == packetAmt)
                 sendPacket(client, $port, makePacket(ip, $local_ip, 2, 0, 0, ""), networkIP)
                 puts "EOT packet sent"
+                log.info("[SEND] EOT packet sent")
                 break
             end
         end
+    #If we're receiving...
     else
         puts "Waiting for data packets..."
         result = ""
@@ -57,15 +68,18 @@ option = gets.chomp
                     end
                 rescue Timeout::Error
                     puts "Did not receive any packets in 10 seconds. Assuming disconnection or lost EOT"
+                    log.info("[RECV] Did not receive any packets in 10 seconds. Assuming disconnection or lost EOT")
                     break
                 end
             end
 
             if packet.type == 2
                 puts "Received EOT from #{packet.src_ip}"
+                log.info("[RECV] Received EOT from #{packet.src_ip}")
                 break
             else
                 puts "Received packet #{packet.seqNum}: #{packet.data} from #{packet.src_ip}"
+                log.info("[RECV] Received packet #{packet.seqNum}: #{packet.data} from #{packet.src_ip}")
                 ack = makePacket(packet.src_ip, $local_ip, 0, packet.seqNum, packet.seqNum + 1, "ACK")
                 sendPacket(client, $port, ack, networkIP)
                 if packet.seqNum == expected_seqnum
