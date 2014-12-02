@@ -32,6 +32,10 @@ def sendData(socket, wSize, networkIP)
         totalACKs = 0 # total amount of ACKs received
         # While we haven't received an ACK for each packet
         while(totalACKs < packetAmt)
+            # If the amount of packets left is less than wSize, adjust accordingly
+            if packetAmt - totalACKs < wSize
+                wSize = packetAmt - totalACKs
+            end
             # Create a window of wSize
             window = fillWindow(ip, totalACKs, msg, wSize)
             puts "Sending packets #{totalACKs} to #{totalACKs + wSize - 1}"
@@ -40,10 +44,6 @@ def sendData(socket, wSize, networkIP)
             sendWindow(networkIP, window, socket)
             # Wait to get ACKs for each packet in window
             totalACKs = getACKs(socket, wSize, totalACKs, $log)
-            # If the amount of packets left is less than wSize, adjust accordingly
-            if packetAmt - totalACKs < wSize
-                wSize = packetAmt - totalACKs
-            end
         end
         # if we got ACKs for every packet, send EOT
         if(totalACKs == packetAmt)
